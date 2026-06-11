@@ -1,3 +1,50 @@
+from __future__ import annotations
+
+import csv
+import hashlib
+import hmac
+import io
+import json
+import os
+import secrets
+import sqlite3
+from datetime import date, datetime, timedelta
+from http import HTTPStatus
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlparse
+
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "hotel_rent.db"
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "hotel_rent.db"
+
+# ✅ ADD THIS (IMPORTANT)
+BACKUP_DIR = BASE_DIR / "backups"
+
+HOST = "0.0.0.0"
+PORT = int(os.environ.get("PORT", 10000))
+DEFAULT_ADMIN = "admin"
+DEFAULT_PASSWORD = os.environ.get("HOTEL_RENT_ADMIN_PASSWORD", "Admin@12345")
+SESSION_HOURS = int(os.environ.get("HOTEL_RENT_SESSION_HOURS", "12"))
+
+
+ROOM_FIELDS = {
+    "roomNo": "room_no",
+    "guestName": "guest_name",
+    "phone": "phone",
+    "bedroomSize": "bedroom_size",
+    "rent": "rent",
+    "availability": "availability",
+    "checkInDate": "check_in_date",
+    "checkInTime": "check_in_time",
+    "durationMonths": "duration_months",
+    "checkoutDate": "checkout_date",
+    "checkoutTime": "checkout_time",
+    "paymentStatus": "payment_status",
+    "lastPaidDate": "last_paid_date",
+}
 # ONLY SHOWING MODIFIED PARTS CLEANLY INTEGRATED
 
 def connect() -> sqlite3.Connection:
@@ -122,3 +169,4 @@ if __name__ == "__main__":
     server = ThreadingHTTPServer((HOST, PORT), HotelHandler)
     print(f"Server running on {HOST}:{PORT}")
     server.serve_forever()
+
