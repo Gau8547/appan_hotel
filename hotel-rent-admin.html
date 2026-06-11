@@ -749,20 +749,106 @@
     }
 
     async function deleteRoom(id) {
-      if (!confirm("Delete this room record?")) return;
-      await api(`/api/rooms/${id}`, { method: "DELETE" });
-      await loadRooms();
-    }
+  if (!confirm("Delete this room record?")) return;
+  await api(`/api/rooms/${id}`, { method: "DELETE" });
+  await loadRooms();
+}
 
-    async function markPaid(id) {
-      await api(`/api/rooms/${id}/paid`, { method: "POST" });
-      await loadRooms();
-    }
+async function markPaid(id) {
+  await api(`/api/rooms/${id}/paid`, { method: "POST" });
+  await loadRooms();
+}
 
-    async function markPending(id) {
-      await api(`/api/rooms/${id}/pending`, { method: "POST" });
-      await loadRooms();
+async function markPending(id) {
+  await api(`/api/rooms/${id}/pending`, { method: "POST" });
+  await loadRooms();
+}
+
+function calculatePendingAmount(room) {
+  if (room.availability === "Available") return 0;
+
+  const rent = Number(room.rent || 0);
+  if (!rent) return 0;
+
+  if (!room.checkInDate) return 0;
+
+  const start = parseDate(room.checkInDate);
+  if (!start) return 0;
+
+  const lastPaid = room.lastPaidDate ? parseDate(room.lastPaidDate) : null;
+
+  let months = 0;
+  let temp = new Date(start);
+
+  while (temp <= today) {
+    if (!lastPaid || temp > lastPaid) {
+      months++;
     }
+    temp = addMonths(temp, 1);
+  }
+
+  return months * rent;
+}
+
+function rowElement(room) {
+  const tr = document.createElement("tr");
+
+  const pendingAmount = calculatePendingAmount(room);
+
+  const statusBadges = [
+    badge(
+      room.availability === "Available" ? "Available" : "Occupied",
+      room.availability === "Available" ? "available" : "occupied"
+    ),
+
+    pendingAmount > 0
+      ? badge("₹" + pendingAmount + " Pending", "pending")
+      : badge("Paid", "paid"),
+
+    room.computed.checkoutDue ? badge("Checkout due", "checkout") : ""
+  ].join(" ");
+
+  tr.innerHTML = `
+    <td>${input(room, "roomNo", "text", "Room no", "compact")}</td>
+    <td>${input(room, "guestName", "text", "Guest name")}</td>
+    <td>${input(room, "phone", "tel", "Phone")}</td>
+    <td>${select(room, "bedroomSize", ["Studio", "One Bedroom", "Two Bedroom", "Three Bedroom", "Suite"])}</td>
+
+    <td>₹${pendingAmount}</td>
+
+    <td>${select(room, "availability", ["Available", "Occupied"])}</td>
+    <td>${input(room, "checkInDate", "date", "")}</td>
+    <td>${input(room, "checkInTime", "time", "")}</td>
+    <td>${input(room, "durationMonths", "number", "Months", "compact")}</td>
+    <td>${input(room, "checkoutDate", "date", "")}</td>
+    <td>${input(room, "checkoutTime", "time", "")}</td>
+    <td>${select(room, "paymentStatus", ["Paid", "Pending"])}</td>
+    <td>${input(room, "lastPaidDate", "date", "")}</td>
+    <td>${escapeHtml(room.computed.nextDue || "-")}</td>
+
+    <td>${statusBadges}</td>
+
+    <td>
+      <div class="row-actions">
+        <button class="icon-button" data-action="paid" type="button">$</button>
+        <button class="icon-button" data-action="pending" type="button">!</button>
+        <button class="icon-button danger" data-action="delete" type="button">x</button>
+      </div>
+    </td>
+  `;
+
+  tr.querySelectorAll("[data-field]").forEach((field) => {
+    field.addEventListener("change", (event) => {
+      updateRoom(room.id, event.target.dataset.field, event.target.value);
+    });
+  });
+
+  tr.querySelector('[data-action="paid"]').addEventListener("click", () => markPaid(room.id));
+  tr.querySelector('[data-action="pending"]').addEventListener("click", () => markPending(room.id));
+  tr.querySelector('[data-action="delete"]').addEventListener("click", () => deleteRoom(room.id));
+
+  return tr;
+}
 
     async function changePassword(event) {
       event.preventDefault();
