@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotel Monthly Rent Admin</title>
+  <style>
+    :root {
+      --ink: #17201c;
+      --muted: #5f6f68;
+      --line: #d9e1dd;
+      --paper: #f6f8f5;
+      --panel: #ffffff;
+      --deep: #12322d;
+      --teal: #0f766e;
+      --gold: #b7791f;
+      --red: #b42318;
+      --green: #137333;
+      --blue: #1d4ed8;
+      --shadow: 0 18px 50px rgba(18, 50, 45, .12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(90deg, rgba(18, 50, 45, .88), rgba(18, 50, 45, .56)),
+        url("hotel-dashboard-header.png") center/cover;
+    }
+
+    .login-box {
+      width: min(420px, 100%);
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid rgba(255, 255, 255, .55);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-box h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .login-box p {
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #33443d;
+    }
+
+    input, select {
+      min-height: 39px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px 10px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(15, 118, 110, .24);
+      border-color: var(--teal);
+    }
+
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 39px;
+      padding: 9px 14px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 800;
+    }
+
+    .secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+    }
+
+    .danger {
+      color: #fff;
+      background: var(--red);
+    }
+
+    .ghost {
+      color: var(--muted);
+      background: transparent;
+      padding: 8px 10px;
+      border-radius: 7px;
+    }
+
+    .app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 250px;
+      padding: 18px;
+      background: #102822;
+      color: #eaf4ef;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .brand {
+      min-height: 74px;
+      display: grid;
+      align-content: center;
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .brand strong {
+      font-size: 19px;
+    }
+
+    .brand span {
+      color: #abc3bb;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 40px;
+      border-radius: 7px;
+      padding: 9px 11px;
+      background: transparent;
+      color: #dcebe6;
+      text-align: left;
+      font-weight: 750;
+    }
+
+    .nav button.active, .nav button:hover {
+      background: rgba(255, 255, 255, .12);
+    }
+
+    .nav small {
+      min-width: 24px;
+      text-align: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, .16);
+      color: #fff;
+    }
+
+    .main {
+      margin-left: 250px;
+      min-height: 100vh;
+    }
+
+    .hero {
+      min-height: 218px;
+      padding: 24px clamp(18px, 3vw, 34px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 22px;
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(16, 40, 34, .92), rgba(16, 40, 34, .50)),
+        url("hotel-dashboard-header.png") center/cover;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 46px);
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 690px;
+      margin: 0;
+      color: #dbece7;
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .content {
+      padding: 22px clamp(16px, 3vw, 34px) 34px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 8px 24px rgba(18, 50, 45, .06);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .security-panel {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: start;
+    }
+
+    .security-box {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 8px 24px rgba(18, 50, 45, .06);
+    }
+
+    .security-box h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .inline-form {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr)) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .search {
+      width: min(360px, 100%);
+    }
+
+    .reminders {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .notice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-left: 5px solid var(--gold);
+      background: #fff8ec;
+      color: #5f3b07;
+      padding: 12px 14px;
+      border-radius: 7px;
+    }
+
+    .notice strong {
+      color: #402700;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(18, 50, 45, .06);
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1280px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #edf3ef;
+      color: #31463e;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    td input, td select {
+      min-width: 120px;
+      min-height: 34px;
+      padding: 6px 8px;
+    }
+
+    td .compact {
+      min-width: 84px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .available { color: #075e2a; background: #ddf8e7; }
+    .occupied { color: #075985; background: #e0f2fe; }
+    .pending { color: #9a3412; background: #ffedd5; }
+    .paid { color: #116329; background: #dcfce7; }
+    .checkout { color: #991b1b; background: #fee2e2; }
+
+    .row-actions {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .icon-button {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .empty {
+      padding: 30px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 920px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .hero {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-actions {
+        justify-content: flex-start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+
+      .security-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .inline-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .login-box {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-box">
+      <h1>Hotel Rent Admin</h1>
+      <p>Abu Dhabi monthly room rent and reminder ledger.</p>
+      <div class="field">
+        <label for="username">Admin user</label>
+        <input id="username" autocomplete="username" value="admin" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="primary" type="submit">Login</button>
+      <p id="loginError" class="footer-note hidden">Use admin and Admin@12345 for the first login.</p>
+    </form>
+  </section>
+
+  <section id="app" class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <strong>Hotel Rent Admin</strong>
+        <span>Monthly room control</span>
+      </div>
+      <nav class="nav" aria-label="Room filters">
+        <button data-filter="all" class="active" type="button">All rooms <small id="countAll">0</small></button>
+        <button data-filter="pending" type="button">Rent pending <small id="countPending">0</small></button>
+        <button data-filter="available" type="button">Available rooms <small id="countAvailable">0</small></button>
+        <button data-filter="occupied" type="button">Occupied rooms <small id="countOccupied">0</small></button>
+        <button data-filter="checkout" type="button">Checkout due <small id="countCheckout">0</small></button>
+      </nav>
+      <button id="backupBtn" class="secondary" type="button">Backup database</button>
+      <button id="logoutBtn" class="secondary" type="button">Logout</button>
+    </aside>
+
+    <main class="main">
+      <header class="hero">
+        <div>
+          <h1>Abu Dhabi Hotel Room Ledger</h1>
+          <p>Track room numbers, guest details, rent, check-in dates, monthly due dates, vacant rooms, and checkout reminders in one table.</p>
+        </div>
+        <div class="hero-actions">
+          <button id="addRoomTop" class="primary" type="button">Add room</button>
+          <button id="notifyBtn" class="secondary" type="button">Enable reminders</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="stats">
+          <div class="stat"><span>Total rooms</span><strong id="statTotal">0</strong></div>
+          <div class="stat"><span>Available</span><strong id="statAvailable">0</strong></div>
+          <div class="stat"><span>Rent pending</span><strong id="statPending">0</strong></div>
+          <div class="stat"><span>Checkout due</span><strong id="statCheckout">0</strong></div>
+        </div>
+
+        <div id="reminders" class="reminders"></div>
+
+        <section class="security-panel">
+          <div class="security-box">
+            <h2>Admin password</h2>
+            <form id="passwordForm" class="inline-form">
+              <div class="field">
+                <label for="currentPassword">Current password</label>
+                <input id="currentPassword" type="password" autocomplete="current-password" required>
+              </div>
+              <div class="field">
+                <label for="newPassword">New password</label>
+                <input id="newPassword" type="password" autocomplete="new-password" minlength="10" required>
+              </div>
+              <div class="field">
+                <label for="confirmPassword">Confirm password</label>
+                <input id="confirmPassword" type="password" autocomplete="new-password" minlength="10" required>
+              </div>
+              <button class="primary" type="submit">Update</button>
+            </form>
+            <div id="passwordMessage" class="message"></div>
+          </div>
+          <div class="security-box">
+            <h2>Database backup</h2>
+            <p class="footer-note">Create a copy of hotel_rent.db before hosting changes, updates, or customer handover.</p>
+            <button id="backupPanelBtn" class="primary" type="button">Create backup</button>
+            <div id="backupMessage" class="message"></div>
+          </div>
+        </section>
+
+        <div class="toolbar">
+          <input id="searchInput" class="search" placeholder="Search room, guest, phone, or status">
+          <div>
+            <button id="addRoomBtn" class="primary" type="button">Add room below table</button>
+            <button id="exportBtn" class="secondary" type="button">Export CSV</button>
+          </div>
+        </div>
+
+        <section class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Room no</th>
+                  <th>Guest name</th>
+                  <th>Phone</th>
+                  <th>Bedroom size</th>
+                  <th>Monthly rent AED</th>
+                  <th>Availability</th>
+                  <th>Check-in date</th>
+                  <th>Check-in time</th>
+                  <th>Duration</th>
+                  <th>Checkout date</th>
+                  <th>Checkout time</th>
+                  <th>Payment</th>
+                  <th>Last paid</th>
+                  <th>Next due</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="roomRows"></tbody>
+            </table>
+          </div>
+          <div id="emptyState" class="empty hidden">No rooms match this view.</div>
+        </section>
+        <p class="footer-note">Data is saved permanently in the SQLite database file: hotel_rent.db.</p>
+      </section>
+    </main>
+  </section>
+
+  <script>
+    const SESSION_KEY = "abuDhabiHotelRentAdmin.apiToken";
+    const API = "";
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let rooms = [];
+    let activeFilter = "all";
+    let apiToken = sessionStorage.getItem(SESSION_KEY) || "";
+
+    const loginScreen = document.getElementById("loginScreen");
+    const app = document.getElementById("app");
+    const rows = document.getElementById("roomRows");
+    const emptyState = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+    const reminders = document.getElementById("reminders");
+
+    document.getElementById("loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      login();
+    });
+
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      try {
+        const result = await api("/api/login", {
+          method: "POST",
+          body: JSON.stringify({ username, password })
+        }, false);
+        apiToken = result.token;
+        sessionStorage.setItem(SESSION_KEY, apiToken);
+        showApp();
+      } catch (error) {
+        document.getElementById("loginError").classList.remove("hidden");
+      }
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      if (apiToken) {
+        try {
+          await api("/api/logout", { method: "POST" });
+        } catch {}
+      }
+      sessionStorage.removeItem(SESSION_KEY);
+      apiToken = "";
+      loginScreen.style.display = "grid";
+      app.style.display = "none";
+    });
+
+    document.querySelectorAll(".nav button").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".nav button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        render();
+      });
+    });
+
+    document.getElementById("addRoomBtn").addEventListener("click", addRoom);
+    document.getElementById("addRoomTop").addEventListener("click", addRoom);
+    document.getElementById("exportBtn").addEventListener("click", exportCsv);
+    document.getElementById("backupBtn").addEventListener("click", createBackup);
+    document.getElementById("backupPanelBtn").addEventListener("click", createBackup);
+    document.getElementById("passwordForm").addEventListener("submit", changePassword);
+    searchInput.addEventListener("input", render);
+
+    document.getElementById("notifyBtn").addEventListener("click", async () => {
+      if (!("Notification" in window)) {
+        alert("Browser notifications are not available here.");
+        return;
+      }
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        notifyAdmin();
+      }
+    });
+
+    if (apiToken) showApp();
+
+    async function showApp() {
+      loginScreen.style.display = "none";
+      app.style.display = "block";
+      try {
+        await loadRooms();
+      } catch (error) {
+        alert("Could not connect to the hotel database server. Start hotel_server.py and open http://127.0.0.1:8765");
+        sessionStorage.removeItem(SESSION_KEY);
+        loginScreen.style.display = "grid";
+        app.style.display = "none";
+      }
+    }
+
+    async function loadRooms() {
+      rooms = await api("/api/rooms");
+      render();
+    }
+
+    async function addRoom() {
+      await api("/api/rooms", {
+        method: "POST",
+        body: JSON.stringify({
+        roomNo: "",
+        guestName: "",
+        phone: "",
+        bedroomSize: "Studio",
+        rent: "",
+        availability: "Available",
+        checkInDate: "",
+        checkInTime: "",
+        durationMonths: 1,
+        checkoutDate: "",
+        checkoutTime: "12:00",
+        paymentStatus: "Paid",
+        lastPaidDate: ""
+        })
+      });
+      await loadRooms();
+      activeFilter = "all";
+      document.querySelectorAll(".nav button").forEach((item) => item.classList.toggle("active", item.dataset.filter === "all"));
+      setTimeout(() => rows.lastElementChild?.querySelector("input")?.focus(), 0);
+    }
+
+    async function updateRoom(id, field, value) {
+      const room = rooms.find((item) => item.id === id);
+      if (!room) return;
+      room[field] = value;
+      if (field === "availability" && value === "Available") {
+        room.guestName = "";
+        room.phone = "";
+        room.paymentStatus = "Paid";
+        room.lastPaidDate = "";
+      }
+      if (field === "checkInDate" || field === "durationMonths") {
+        room.checkoutDate = calculateCheckout(room.checkInDate, room.durationMonths);
+      }
+      await api(`/api/rooms/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(room)
+      });
+      await loadRooms();
+    }
+
+    async function deleteRoom(id) {
+      if (!confirm("Delete this room record?")) return;
+      await api(`/api/rooms/${id}`, { method: "DELETE" });
+      await loadRooms();
+    }
+
+    async function markPaid(id) {
+      await api(`/api/rooms/${id}/paid`, { method: "POST" });
+      await loadRooms();
+    }
+
+    async function markPending(id) {
+      await api(`/api/rooms/${id}/pending`, { method: "POST" });
+      await loadRooms();
+    }
+
+    async function changePassword(event) {
+      event.preventDefault();
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const message = document.getElementById("passwordMessage");
+      if (newPassword !== confirmPassword) {
+        message.textContent = "New password and confirmation do not match.";
+        return;
+      }
+      try {
+        await api("/api/change-password", {
+          method: "POST",
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        document.getElementById("passwordForm").reset();
+        message.textContent = "Password updated. Use the new password for future logins.";
+      } catch (error) {
+        message.textContent = "Password update failed. Check the current password and use at least 10 characters.";
+      }
+    }
+
+    async function createBackup() {
+      const message = document.getElementById("backupMessage");
+      try {
+        const result = await api("/api/backup", { method: "POST" });
+        message.textContent = `Backup created: ${result.file}`;
+      } catch (error) {
+        message.textContent = "Backup failed. Please check server permission for the backups folder.";
+      }
+    }
+
+    function render() {
+      renderStats(rooms);
+      renderReminders(rooms);
+      renderRows(rooms);
+    }
+
+    function renderStats(enriched) {
+      const pending = enriched.filter((room) => room.computed.pending).length;
+      const available = enriched.filter((room) => room.availability === "Available").length;
+      const occupied = enriched.filter((room) => room.availability === "Occupied").length;
+      const checkoutDue = enriched.filter((room) => room.computed.checkoutDue).length;
+
+      setText("statTotal", rooms.length);
+      setText("statAvailable", available);
+      setText("statPending", pending);
+      setText("statCheckout", checkoutDue);
+      setText("countAll", rooms.length);
+      setText("countPending", pending);
+      setText("countAvailable", available);
+      setText("countOccupied", occupied);
+      setText("countCheckout", checkoutDue);
+    }
+
+    function renderReminders(enriched) {
+      const due = enriched.filter((room) => room.computed.pending || room.computed.checkoutDue);
+      reminders.innerHTML = "";
+      due.slice(0, 4).forEach((room) => {
+        const message = room.computed.checkoutDue
+          ? `Checkout started for Room ${room.roomNo || "-"} (${room.guestName || "Guest"}) on ${room.checkoutDate || "today"}.`
+          : `Rent pending for Room ${room.roomNo || "-"} (${room.guestName || "Guest"}), due ${room.computed.nextDue || "now"}.`;
+        const notice = document.createElement("div");
+        notice.className = "notice";
+        notice.innerHTML = `<span><strong>Reminder</strong> ${escapeHtml(message)}</span><button class="secondary" type="button">Mark paid</button>`;
+        notice.querySelector("button").addEventListener("click", () => markPaid(room.id));
+        reminders.appendChild(notice);
+      });
+    }
+
+    function renderRows(enriched) {
+      const query = searchInput.value.trim().toLowerCase();
+      const filtered = enriched.filter((room) => {
+        const matchesFilter =
+          activeFilter === "all" ||
+          (activeFilter === "pending" && room.computed.pending) ||
+          (activeFilter === "available" && room.availability === "Available") ||
+          (activeFilter === "occupied" && room.availability === "Occupied") ||
+          (activeFilter === "checkout" && room.computed.checkoutDue);
+
+        const haystack = [
+          room.roomNo,
+          room.guestName,
+          room.phone,
+          room.bedroomSize,
+          room.availability,
+          room.paymentStatus
+        ].join(" ").toLowerCase();
+
+        return matchesFilter && (!query || haystack.includes(query));
+      });
+
+      rows.innerHTML = "";
+      filtered.forEach((room) => rows.appendChild(rowElement(room)));
+      emptyState.classList.toggle("hidden", filtered.length > 0);
+    }
+
+    function rowElement(room) {
+      const tr = document.createElement("tr");
+      const statusBadges = [
+        badge(room.availability === "Available" ? "Available" : "Occupied", room.availability === "Available" ? "available" : "occupied"),
+        badge(room.computed.pending ? "Pending" : "Not pending", room.computed.pending ? "pending" : "paid"),
+        room.computed.checkoutDue ? badge("Checkout due", "checkout") : ""
+      ].join(" ");
+
+      tr.innerHTML = `
+        <td>${input(room, "roomNo", "text", "Room no", "compact")}</td>
+        <td>${input(room, "guestName", "text", "Guest name")}</td>
+        <td>${input(room, "phone", "tel", "Phone")}</td>
+        <td>${select(room, "bedroomSize", ["Studio", "One Bedroom", "Two Bedroom", "Three Bedroom", "Suite"])}</td>
+        <td>${input(room, "rent", "number", "Rent", "compact")}</td>
+        <td>${select(room, "availability", ["Available", "Occupied"])}</td>
+        <td>${input(room, "checkInDate", "date", "")}</td>
+        <td>${input(room, "checkInTime", "time", "")}</td>
+        <td>${input(room, "durationMonths", "number", "Months", "compact")}</td>
+        <td>${input(room, "checkoutDate", "date", "")}</td>
+        <td>${input(room, "checkoutTime", "time", "")}</td>
+        <td>${select(room, "paymentStatus", ["Paid", "Pending"])}</td>
+        <td>${input(room, "lastPaidDate", "date", "")}</td>
+        <td>${escapeHtml(room.computed.nextDue || "-")}</td>
+        <td>${statusBadges}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-button" data-action="paid" title="Mark rent paid" type="button">$</button>
+            <button class="icon-button" data-action="pending" title="Mark rent pending" type="button">!</button>
+            <button class="icon-button danger" data-action="delete" title="Delete room" type="button">x</button>
+          </div>
+        </td>
+      `;
+
+      tr.querySelectorAll("[data-field]").forEach((field) => {
+        field.addEventListener("change", (event) => {
+          updateRoom(room.id, event.target.dataset.field, event.target.value);
+        });
+      });
+      tr.querySelector('[data-action="paid"]').addEventListener("click", () => markPaid(room.id));
+      tr.querySelector('[data-action="pending"]').addEventListener("click", () => markPending(room.id));
+      tr.querySelector('[data-action="delete"]').addEventListener("click", () => deleteRoom(room.id));
+      return tr;
+    }
+
+    function input(room, field, type, placeholder, className = "") {
+      const value = room[field] ?? "";
+      return `<input class="${className}" data-field="${field}" type="${type}" value="${escapeAttr(value)}" placeholder="${escapeAttr(placeholder)}" ${type === "number" ? "min=\"0\"" : ""}>`;
+    }
+
+    function select(room, field, options) {
+      return `<select data-field="${field}">${options.map((option) => `<option value="${escapeAttr(option)}" ${room[field] === option ? "selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select>`;
+    }
+
+    function badge(text, className) {
+      return `<span class="status ${className}">${escapeHtml(text)}</span>`;
+    }
+
+    function computeStatus(room) {
+      if (room.computed) return room.computed;
+      if (room.availability === "Available") {
+        return { pending: false, checkoutDue: false, nextDue: "" };
+      }
+
+      const nextDue = getNextDueDate(room);
+      const dueDate = nextDue ? parseDate(nextDue) : null;
+      const checkoutDate = room.checkoutDate ? parseDate(room.checkoutDate) : null;
+      const pending = room.paymentStatus === "Pending" || Boolean(dueDate && dueDate <= today);
+      const checkoutDue = Boolean(checkoutDate && checkoutDate <= today);
+
+      return { pending, checkoutDue, nextDue };
+    }
+
+    function getNextDueDate(room) {
+      if (!room.checkInDate) return "";
+      const start = parseDate(room.checkInDate);
+      if (!start) return "";
+
+      const lastPaid = room.lastPaidDate ? parseDate(room.lastPaidDate) : null;
+      let due = new Date(start);
+      for (let i = 0; i < 60; i += 1) {
+        if (!lastPaid || due > lastPaid) break;
+        due = addMonths(start, i + 1);
+      }
+      return formatDate(due);
+    }
+
+    function calculateCheckout(checkInDate, months) {
+      if (!checkInDate) return "";
+      const parsed = parseDate(checkInDate);
+      if (!parsed) return "";
+      return formatDate(addMonths(parsed, Number(months || 1)));
+    }
+
+    function addMonths(date, months) {
+      const copy = new Date(date);
+      const originalDay = copy.getDate();
+      copy.setMonth(copy.getMonth() + Number(months || 1));
+      if (copy.getDate() !== originalDay) copy.setDate(0);
+      return copy;
+    }
+
+    function parseDate(value) {
+      if (!value) return null;
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function notifyAdmin() {
+      const due = rooms.map((room) => ({ ...room, computed: computeStatus(room) }))
+        .filter((room) => room.computed.pending || room.computed.checkoutDue);
+      if (!due.length) {
+        new Notification("Hotel Rent Admin", { body: "No rent or checkout reminders right now." });
+        return;
+      }
+      due.slice(0, 3).forEach((room) => {
+        const body = room.computed.checkoutDue
+          ? `Room ${room.roomNo || "-"} checkout has started.`
+          : `Room ${room.roomNo || "-"} rent is pending.`;
+        new Notification("Hotel Rent Reminder", { body });
+      });
+    }
+
+    async function exportCsv() {
+      const response = await fetch("/api/export", {
+        headers: { Authorization: `Bearer ${apiToken}` }
+      });
+      if (!response.ok) {
+        alert("Could not export CSV. Please login again.");
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "hotel-rent-export.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function api(path, options = {}, useAuth = true) {
+      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+      if (useAuth && apiToken) headers.Authorization = `Bearer ${apiToken}`;
+      const response = await fetch(API + path, { ...options, headers });
+      if (response.status === 401) {
+        sessionStorage.removeItem(SESSION_KEY);
+        apiToken = "";
+      }
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Request failed: ${response.status}`);
+      }
+      const contentType = response.headers.get("Content-Type") || "";
+      return contentType.includes("application/json") ? response.json() : response.text();
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+  </script>
+</body>
+</html>
