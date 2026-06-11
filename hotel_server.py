@@ -18,8 +18,8 @@ from urllib.parse import urlparse
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "hotel_rent.db"
 BACKUP_DIR = BASE_DIR / "backups"
-HOST = os.environ.get("HOTEL_RENT_HOST", "127.0.0.1")
-PORT = int(os.environ.get("HOTEL_RENT_PORT", "8765"))
+HOST = "0.0.0.0"
+PORT = int(os.environ.get("PORT", 10000))
 DEFAULT_ADMIN = "admin"
 DEFAULT_PASSWORD = os.environ.get("HOTEL_RENT_ADMIN_PASSWORD", "Admin@12345")
 SESSION_HOURS = int(os.environ.get("HOTEL_RENT_SESSION_HOURS", "12"))
